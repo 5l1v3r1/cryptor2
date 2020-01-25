@@ -1,0 +1,67 @@
+#!/bin/python3
+import os 
+import pyAesCrypt
+import colorama
+from colorama import Fore,Back,Style
+colorama.init()
+import random
+from os import sys
+bufferSize = 900*1024
+def generate_password():
+ pas=""
+ sym=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y''z','1','2','3','4','5','6','7','8','9','0','!','@','#']
+ for i in range(0,20):
+  pas+=random.choice(sym)
+ print(Fore.GREEN+"Password was generated!"+Fore.RESET+"({})".format(pas))
+ return pas
+def main(ch):
+ global password
+ if ch == "file":
+  file_path=input("Enter file path:")
+  check(file_path)
+  password=generate_password()
+  get_data(file_path)
+  save_key()
+  print(Fore.GREEN+"DONE!"+Fore.RESET)
+  exit()
+ elif ch == "dir":
+  dir=input("Enter directory:")
+  check(dir)
+  password=generate_password()
+  find(dir)
+  save_key()
+  print(Fore.GREEN+"All your files in {} directory were encrypted".format(dir)+Fore.RESET)
+  i=input(Fore.GREEN+"Press any key..."+Fore.RESET)
+  exit()
+def save_key():
+ f=open("key.txt",'w')
+ f.write(password)
+ f.close()
+def find(dir):
+ for name in os.listdir(dir):
+  if  os.path.isfile(os.path.join(dir,name)):
+   print (Fore.GREEN+'Encrypting file:'+Fore.RESET+os.path.join(dir,name))
+   crypt(os.path.join(dir,name))
+  else :
+   if os.path.isdir(os.path.join(dir,name)):
+    find(os.path.join(dir,name))
+def get_data(file):
+ crypt(file)
+ print(Fore.GREEN+"{} was encrypted".format(file)+Fore.RESET)
+def crypt(path):
+ pyAesCrypt.encryptFile(path,path+".crp",password,bufferSize)
+ os.remove(path)
+def check(path):
+ if path == "":
+  print(Fore.RED+"ERROR(invalid input)"+Fore.RESET)
+  main()
+try:
+ g=sys.argv[1]
+ #v=sys.argv[2]
+except:
+ print("Usage './cryptor --dir or --file'")
+ exit()
+if sys.argv[1] == "--dir":
+ main("dir")
+elif sys.argv[1] == "--file":
+ main("file")

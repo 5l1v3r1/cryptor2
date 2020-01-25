@@ -1,0 +1,51 @@
+#!/bin/python3
+import os 
+import pyAesCrypt
+import colorama
+from colorama import Fore,Back,Style
+import random
+from os import sys
+colorama.init()
+bufferSize = 900*1024
+def main(ch):
+ global password
+ if ch == "dir":
+  global dir
+  dir=input("Enter dir:")
+  password=input("Password:")
+  check_password()
+  find(dir)
+  print(Fore.GREEN+"All your files in {} directory were decrypted".format(dir)+Fore.RESET)
+ elif ch == "file": 
+  file_path=input("Enter file path:")
+  password=input("Password:")
+  check_password(password)
+  decrypt(file_path)
+  print(Fore.GREEN+"DONE!"+Fore.RESET)
+  exit()
+def find(dir):
+ for name in os.listdir(dir):
+  if  os.path.isfile(os.path.join(dir,name)):
+   print (Fore.GREEN+'Decrypting file:'+Fore.RESET+os.path.join(dir,name))
+   decrypt(os.path.join(dir,name))
+   # print(Fore.RED+"Error(maybe invalid password)"+Fore.RESET)
+  else :
+   if os.path.isdir(os.path.join(dir,name)):
+    find(os.path.join(dir,name))
+def decrypt(path):
+ pyAesCrypt.decryptFile(path,path[:-4],password,bufferSize)
+ os.remove(path)
+def check_password(file):
+ if password == '' or file == "":
+  print(Fore.RED+"ERROR(Invalid input)"+Fore.RESET)
+  main() 
+try:
+ g=sys.argv[1]
+ #v=sys.argv[2]
+except:
+ print("Usage './cryptor --dir or --file'")
+ exit()
+if sys.argv[1] == "--dir":
+ main("dir")
+elif sys.argv[1] == "--file":
+ main("file")
