@@ -13,7 +13,7 @@ def main(ch):
   global dir
   dir=input("Enter dir:")
   password=input("Password:")
-  check_password()
+  check_password(password)
   find(dir)
   print(Fore.GREEN+"All your files in {} directory were decrypted".format(dir)+Fore.RESET)
  elif ch == "file": 
